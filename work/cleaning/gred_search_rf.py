@@ -5,9 +5,9 @@ def grid_search_rf(X, y):
     model = RandomForestClassifier()
 
     param_grid = {
-        'max_depth': [22, 23, 24],
-        'min_samples_split': [4, 5, 6],
-        'min_samples_leaf': [3, 4, 5]
+        'max_depth': [10, 20, 30],
+        'min_samples_split': [2, 5, 7, 9, 11],
+        'min_samples_leaf': [3, 5, 7, 9, 11]
     }
 
     grid_search = GridSearchCV(estimator=model, param_grid=param_grid, scoring='accuracy')
