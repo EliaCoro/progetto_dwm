@@ -1,22 +1,25 @@
+
 import numpy as np
 import pandas as pd
-from pandas.core.interchange.dataframe_protocol import DataFrame
 from sklearn.preprocessing import OneHotEncoder
 
-from sklearn.preprocessing import OneHotEncoder
+def OneHotEncoderFunction(data: pd.DataFrame, columns_to_exclude=None) -> pd.DataFrame:
+    if columns_to_exclude is None:
+        columns_to_exclude = []
 
-def OneHotEncoderFunction(data: pd.DataFrame) -> pd.DataFrame:
-    categorical_cols = data.select_dtypes(include=['object']).columns
-    numerical_cols = np.setdiff1d(np.array(data.columns), categorical_cols)
+    categorical_cols = data.select_dtypes(include=['object']).columns.difference(columns_to_exclude)
+    numerical_cols = data.columns.difference(categorical_cols).difference(columns_to_exclude)
 
     encoder = OneHotEncoder(sparse_output=False, drop='first')
     encoder.fit(data[categorical_cols])
+
     data_encoded = pd.DataFrame(
-        encoder.fit_transform(data[categorical_cols]),
+        encoder.transform(data[categorical_cols]),
         columns=encoder.get_feature_names_out(categorical_cols),
         index=data.index
     )
 
-    result = pd.concat([data[numerical_cols], data_encoded], axis=1)
+    # Combina le colonne numeriche e codificate
+    result = pd.concat([data[numerical_cols], data[columns_to_exclude], data_encoded], axis=1)
 
     return result
