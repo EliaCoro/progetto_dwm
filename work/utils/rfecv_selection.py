@@ -3,19 +3,23 @@ from sklearn.feature_selection import RFECV
 from sklearn.ensemble import RandomForestClassifier
 
 def rfecv_selection(data: pd.DataFrame, y=None):
-    # Initialize RFECV with cross-validation and the random forest estimator
+    # Inizializzazione di RFECV con Random Forest
     selector = RFECV(
-        estimator=RandomForestClassifier(n_estimators=100, random_state=0, n_jobs=-1),
+        estimator=RandomForestClassifier(n_estimators=100, n_jobs=-1),
     )
-    X = data
-    
-    # Fit RFECV to the training data
+
+    # Estrazione delle feature e del target
     if y is None:
+        if 'sii' not in data:
+            raise ValueError("La colonna 'sii' non è presente nei dati e 'y' non è stato fornito.")
         X = data.drop(columns=['sii'])
         y = data['sii']
+    else:
+        X = data
 
+    # Addestramento del selettore
     selector.fit(X, y)
 
-    # Return both the number of features and the names of the selected features
+    # Selezione delle feature
     selected_features = X.columns[selector.support_].tolist()
     return selector.n_features_, selected_features
